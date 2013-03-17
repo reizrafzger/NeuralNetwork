@@ -1,3 +1,4 @@
+package com.vonhessling.neuralnetwork;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -6,7 +7,9 @@ import org.apache.commons.io.FileUtils;
 
 /**
  * Implementation of a feed-forward backpropagation neural network
- * @TODO needs momentum and prediction functionality framework; unit tests 
+ * 
+ * @TODO needs momentum and prediction functionality framework
+ * 
  * @author vonhessling
  *
  */
@@ -19,7 +22,7 @@ public class NeuralNetwork {
 	// [layerIndex][neuronIndex]
 	private Neuron[][] neurons;
 	
-	
+	// training examples
 	private List<Example> examples;
 	
 	/**
@@ -56,8 +59,12 @@ public class NeuralNetwork {
 			}
 		}
 	}
-	
-	// could make into a factory -- e.g. to normalize automatically the values...
+
+	/**
+	 * Loads the examples in the given file
+	 * @param fileName The name of the file
+	 * @throws IOException Throws IOException if i/o error occurs with file
+	 */
 	void loadExamples(String fileName) throws IOException {
 		log.info("Loading examples...");
 		
@@ -84,6 +91,10 @@ public class NeuralNetwork {
 		log.info(examples.size() + " examples loaded.");
 	}
 	
+	/**
+	 * Trains the neural network using all loaded examples once.
+	 * @param learningRate The learning rate to use.
+	 */
 	public void trainAllExamples(double learningRate) {
 		log.info("Training Neural Network...");
 		for (Example example : examples) {
@@ -177,6 +188,7 @@ public class NeuralNetwork {
 	public void printWeights() {
 		log.info("Weights:");
 		StringBuilder sb = new StringBuilder();
+		sb.append("\r\n");		
 		for (int layer = 0; layer < weights.length; layer++) {
 			log.info("Layer " + layer + "-" + (layer + 1));
 			for (int from = 0; from < weights[layer].length; from++) {
@@ -204,15 +216,32 @@ public class NeuralNetwork {
 		}
 	}
 	
+	/**
+	 * Sigmoid function
+	 * @param x
+	 * @return
+	 */
 	public static double sigmoid(double x) {
 		return (1 / ( 1 + Math.pow(Math.E,(-1 * x))));
 	}
 	
+	/**
+	 * Derivate of sigmoid function.
+	 * @param x
+	 * @return
+	 */
 	public static double sigmoidDerivative(double x) {
 		double s = sigmoid(x);
 		return s * (1-s);		
 	}	
 	
+	/**
+	 * Computes the error in the output layer neurons
+	 * @param input
+	 * @param prediction
+	 * @param truth
+	 * @return
+	 */
 	private double computeOutputError(double input, double prediction, double truth) {
 		return sigmoidDerivative(input) * (truth - prediction);
 	}	

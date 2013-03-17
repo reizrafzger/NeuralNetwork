@@ -1,3 +1,4 @@
+package com.vonhessling.neuralnetwork;
 
 public class Neuron {
 	private double input;
