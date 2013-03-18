@@ -22,8 +22,9 @@ public class NeuralNetwork {
 	// [layerIndex][neuronIndex]
 	private Neuron[][] neurons;
 	
-	// training examples
-	private List<Example> examples;
+	private List<Example> trainingExamples;
+
+	private List<Example> testingExamples;
 	
 	/**
 	 * 
@@ -31,7 +32,7 @@ public class NeuralNetwork {
 	 * @param numNeurons Describes the number of neurons per layer; Index is the layer index
 	 */
 	public NeuralNetwork(int[] numNeurons) {
-		this.examples = new ArrayList<Example>();
+		this.trainingExamples = new ArrayList<Example>();
 		
 		// initialize neurons in all layers
 		neurons = new Neuron[numNeurons.length][];
@@ -62,11 +63,30 @@ public class NeuralNetwork {
 
 	/**
 	 * Loads the examples in the given file
+	 * 
 	 * @param fileName The name of the file
+	 * @param mode Testing/Training mode etc
 	 * @throws IOException Throws IOException if i/o error occurs with file
 	 */
-	void loadExamples(String fileName) throws IOException {
-		log.info("Loading examples...");
+	void loadExamples(String fileName, Mode mode) throws IOException {
+		log.info("Loading examples from " + fileName + " for " + mode + "...");
+		int size = 0;
+		switch (mode) {
+			case TRAINING: {
+				trainingExamples = loadExamples(fileName);
+				size = trainingExamples.size();
+			}
+			case TESTING: {
+				testingExamples = loadExamples(fileName);
+				size = testingExamples.size();
+			}
+		}
+		log.info(size + " examples loaded.");
+	}
+
+	
+	private List<Example> loadExamples(String fileName) throws IOException {
+		List<Example> loadedExamples = new ArrayList<Example>();
 		
 		List<String> lines = FileUtils.readLines(new File(fileName));
 		for (String line : lines) {
@@ -85,44 +105,46 @@ public class NeuralNetwork {
 					outputVector[o++] = Double.parseDouble(value.trim());
 				}
 			}
-			examples.add(new Example(inputVector, outputVector));
+			loadedExamples.add(new Example(inputVector, outputVector));
 			
 		}
-		log.info(examples.size() + " examples loaded.");
+		
+		return loadedExamples;
+	}
+	
+	
+	/**
+	 * Trains the neural network using all loaded examples numTimes
+	 * @param numTimes
+	 * @param learningRate
+	 */
+	public void trainExamples(int numTimes, double learningRate) {
+		log.info("Training Neural Network " + numTimes + " times...");		
+		for (int i = 0; i < numTimes; i++) {
+			trainExamples(learningRate);
+		}		
 	}
 	
 	/**
 	 * Trains the neural network using all loaded examples once.
 	 * @param learningRate The learning rate to use.
 	 */
-	public void trainAllExamples(double learningRate) {
-		log.info("Training Neural Network...");
-		for (Example example : examples) {
-			// set input-neuron's output value to the example's input vector
-			for (int j = 0; j < neurons[0].length; j++) { 
-				neurons[0][j].setOutput(example.getInput()[j]);
-			}
+	void trainExamples(double learningRate) {
+		for (Example example : trainingExamples) {
+			loadExampleInInputLayer(example);
 			
-			Neuron currentNeuron;
-			// propagate the value forward
-			for (int layer = 1; layer < neurons.length; layer++) { // for each layer
-				for (int i = 0; i < neurons[layer].length; i++) {  // update each neuron's input value
-					currentNeuron = neurons[layer][i];
-					// find input value by summing up the output of the previous layer, weighted
-					currentNeuron.setInput(getInputStrengthForNeuron(layer, i));
-					// this neuron's output is the sigmoid value of the input
-					currentNeuron.setOutput(sigmoid(currentNeuron.getInput()));
+			propagateForward();
 
-					if (layer == neurons.length - 1) { // for the output layer only, compute the error
-						currentNeuron.setError(
-								computeOutputError(
-										currentNeuron.getInput(), 
-										currentNeuron.getOutput(), 
-										example.getOutput()[i]));
-					}
-				}
+			Neuron currentNeuron;
+			int outputLayer = neurons.length - 1;  // for the output layer only, compute the error
+			for (int i = 0; i < neurons[outputLayer].length; i++) {  // update each neuron's input value
+				currentNeuron = neurons[outputLayer][i];
+				currentNeuron.setError(
+						computeOutputError(
+								currentNeuron.getInput(), 
+								currentNeuron.getOutput(), 
+								example.getOutput()[i]));				
 			}
-			
 
 
 			// propagate error back layer by layer and update weights accordingly
@@ -142,7 +164,61 @@ public class NeuralNetwork {
 
 	}
 	
+	/**
+	 * Propagates the values forward up to the output layer
+	 */
+	private void propagateForward() {
+		Neuron currentNeuron;
+		// propagate the value forward
+		for (int layer = 1; layer < neurons.length; layer++) { // for each layer
+			for (int i = 0; i < neurons[layer].length; i++) {  // update each neuron's input value
+				currentNeuron = neurons[layer][i];
+				// find input value by summing up the output of the previous layer, weighted
+				currentNeuron.setInput(getInputStrengthForNeuron(layer, i));
+				// this neuron's output is the sigmoid value of the input
+				currentNeuron.setOutput(sigmoid(currentNeuron.getInput()));
+			}
+		}		
+	}
 	
+	/**
+	 * Tests all examples and prints info
+	 */
+	public void testExamples() {
+		for (Example example : testingExamples) {
+			log.info("Testing: " + example);
+			loadExampleInInputLayer(example);
+			propagateForward();
+			int outputLayer = neurons.length - 1;
+			log.info("Prediction: ");
+			for (int i = 0; i < neurons[outputLayer].length; i++) {
+				log.info(neurons[outputLayer][i].getOutput());
+			}
+		}
+	}
+	
+	/**
+	 * Using this network, sets/overwrites the given examples output values
+	 * @param example
+	 */
+	public void predict(Example example) {
+		loadExampleInInputLayer(example);
+		propagateForward();
+		int outputLayer = neurons.length - 1;
+		double[] output = new double[neurons[outputLayer].length];
+		for (int i = 0; i < neurons[outputLayer].length; i++) {
+			output[i] = neurons[outputLayer][i].getOutput();
+		}
+		example.setOutput(output);		
+	}
+	
+	private void loadExampleInInputLayer(Example example) {
+		// set input-neuron's output value to the example's input vector
+		for (int j = 0; j < neurons[0].length; j++) { 
+			neurons[0][j].setOutput(example.getInput()[j]);
+		}
+		
+	}
 	
 	/**
 	 * Returns the input strength of the given neuron in the given layer by 
@@ -246,4 +322,20 @@ public class NeuralNetwork {
 		return sigmoidDerivative(input) * (truth - prediction);
 	}	
 	
+	/**
+	 * Returns how many examples have been loaded for the given mode
+	 * @param mode
+	 * @return
+	 */
+	int getNumExamples(Mode mode) {
+		switch (mode) {
+			case TRAINING: {
+				return trainingExamples.size();
+			}
+			case TESTING: {
+				return testingExamples.size();
+			}
+		}
+		return -1;
+	}
 }

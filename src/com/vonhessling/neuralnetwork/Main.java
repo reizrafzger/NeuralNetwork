@@ -14,14 +14,11 @@ public class Main {
 		int[] numNeurons = {7,3,1};
 		NeuralNetwork nn = new NeuralNetwork(numNeurons);
 		try {
-			nn.loadExamples("var/abaloneNormalized.csv");
+			nn.loadExamples("var/abaloneNormalized.csv", Mode.TRAINING);
 		} catch (IOException e) {
 			log.error(e);
 		}
-		
-		for (int i = 0; i < 1000; i++) {
-			nn.trainAllExamples(0.25);
-		}
+		nn.trainExamples(1000, 0.25);
 		nn.printWeights();
 		nn.printNeurons();
 

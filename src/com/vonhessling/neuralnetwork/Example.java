@@ -19,5 +19,30 @@ public class Example {
 	public double[] getOutput() {
 		return output;
 	}
+	
+	public void setOutput(double[] output) {
+		this.output = output;
+	}
+
+	public void setInput(double[] input) {
+		this.input = input;
+	}
+	
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Example {");
+		for (int i = 0; i < input.length; i++) {
+			sb.append(input[i]);
+			sb.append(" ");
+		}
+		sb.append("} - {");
+		for (int i = 0; i < output.length; i++) {
+			sb.append(output[i]);
+		}
+		sb.append("}");
+		return sb.toString();
+	}
 
 }
