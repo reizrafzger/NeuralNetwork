@@ -12,3 +12,7 @@ bin/Example.class
 *.class
 
 bin/log4j.properties
+
+build/log4j.properties
+
+dist/neuralnetwork.jar
