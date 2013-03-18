@@ -1,5 +1,10 @@
 package com.vonhessling.neuralnetwork;
 
+/**
+ * Represents a Perceptron
+ * @author vonhessling
+ *
+ */
 public class Neuron {
 	private double input;
 	private double output;

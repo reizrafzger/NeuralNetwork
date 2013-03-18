@@ -5,6 +5,11 @@ import org.apache.log4j.Logger;
 
 
 
+/**
+ * Example class running a Neural Network 
+ * @author vonhessling
+ *
+ */
 public class Main {
     private static final Logger log = Logger.getLogger(NeuralNetwork.class);
 	

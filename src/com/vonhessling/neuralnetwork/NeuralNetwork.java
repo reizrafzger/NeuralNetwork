@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils;
 /**
  * Implementation of a feed-forward backpropagation neural network
  * 
- * @TODO needs momentum and prediction functionality framework
+ * @TODO Could add momentum
  * 
  * @author vonhessling
  *

@@ -6,6 +6,7 @@
 	<target name="clean">
 		<delete dir="${build.dir}"/>
 		<delete dir="${dist.dir}"/>
+		<delete dir="${javadoc.dir}"/>
 	</target>
 	
 	<target name="prepare" depends="clean">
@@ -52,6 +53,21 @@
 		
 	</target>
 	
+	
+	<target name="javadoc" description="Generate Javadocs">
+		<delete dir="${javadoc.dir}"/>
+		<mkdir dir="${javadoc.dir}"/>
+	
+		<javadoc destdir="${javadoc.dir}" author="true" use="true" version="true" 
+				windowtitle="NeuralNetwork Javadoc">
+			<packageset dir="${src.dir}" defaultexcludes="yes">
+				<include name="**" />
+			</packageset>
+			<doctitle>&lt;h1&gt;NeuralNetwork API Reference&lt;/h1&gt;</doctitle>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
+	</target>	
+	
 	<!-- to create the .class file we need to make reference to the .jar dependencies -->
 	<path id="jars">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -60,4 +76,7 @@
 	<target name="run" depends="compile">
 		<java fork="true" failonerror="yes" jar="${jar}/"/>
 	</target>
+	
+    <target name="main" depends="javadoc,run"/> 
+
 </project>

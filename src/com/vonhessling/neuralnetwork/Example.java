@@ -1,5 +1,10 @@
 package com.vonhessling.neuralnetwork;
 
+/**
+ * One data point, used e.g. for training or testing
+ * @author vonhessling
+ *
+ */
 public class Example {
 	
 	// assumption: input and output is normalized between 0 and 1
