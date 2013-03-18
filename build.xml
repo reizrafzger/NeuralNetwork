@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="compile" name="neuralnetwork">
+    
+	<property file="./conf/build.properties" />
+	
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
+	
+	<target name="prepare" depends="clean">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+	<target name="compile" depends="prepare">
+		
+		<!-- from .java to .class -->
+		<javac srcdir="${src.dir}" 
+			destdir="${build.dir}" 
+			classpathref="jars" 
+			fork="yes" 
+			encoding="${charset}"
+			debug="${debug}"
+			deprecation="${deprecation}" 
+			optimize="${optimize}"
+			compiler="javac${jvm.version}" 
+			target="${jvm.version}"
+			source="${jvm.version}"
+			includeantruntime="false" />
+		
+		<copy todir="${build.dir}">
+			<filelist dir="${conf.dir}">
+				<file name="log4j.properties"/>
+			</filelist>
+		</copy>
+		
+		<!-- builds the final jar -->
+		<jar destfile="${jar}">
+			<fileset dir="${build.dir}">
+				<include name="**/*.class"/>
+				<include name="**/*.properties"/>
+			</fileset>
+
+			
+			<!-- includes the .jar dependencies -->
+			<zipgroupfileset dir="${lib.dir}" includes="*.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="${mainclass}"/>
+			</manifest>			
+		</jar>
+		
+	</target>
+	
+	<!-- to create the .class file we need to make reference to the .jar dependencies -->
+	<path id="jars">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+	
+	<target name="run" depends="compile">
+		<java fork="true" failonerror="yes" jar="${jar}/"/>
+	</target>
+</project>
