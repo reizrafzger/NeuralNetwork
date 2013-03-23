@@ -11,14 +11,14 @@ import org.apache.log4j.Logger;
  *
  */
 public class Main {
-    private static final Logger log = Logger.getLogger(NeuralNetwork.class);
+    private static final Logger log = Logger.getLogger(FFBPNeuralNetwork.class);
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		int[] numNeurons = {7,3,1};
-		NeuralNetwork nn = new NeuralNetwork(numNeurons);
+		NeuralNetwork nn = new FFBPNeuralNetwork(numNeurons);
 		String trainingFileName;
 		if (args.length != 0) {
 			trainingFileName = args[0];
@@ -31,8 +31,8 @@ public class Main {
 			log.error(e);
 		}
 		nn.trainExamples(1000, 0.25);
-		nn.printWeights();
-		nn.printNeurons();
+//		nn.printWeights();
+//		nn.printNeurons();
 
 	}
 

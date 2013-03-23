@@ -22,23 +22,23 @@ public class NeuralNetworkTest {
 
 	@Test
 	public void testSigmoid() {
-		assertTrue(new Double(0.9999546021312976).equals(NeuralNetwork.sigmoid(10)));
-		assertTrue(new Double(0.5).equals(NeuralNetwork.sigmoid(0)));
-		assertTrue(new Double(0.7310585786300049).equals(NeuralNetwork.sigmoid(1)));
-		assertTrue(new Double(0.11920292202211757).equals(NeuralNetwork.sigmoid(-2)));
+		assertTrue(new Double(0.9999546021312976).equals(MathUtils.sigmoid(10)));
+		assertTrue(new Double(0.5).equals(MathUtils.sigmoid(0)));
+		assertTrue(new Double(0.7310585786300049).equals(MathUtils.sigmoid(1)));
+		assertTrue(new Double(0.11920292202211757).equals(MathUtils.sigmoid(-2)));
 		
 	}
 	@Test
 	public void testSigmoidDerivative() {
-		assertTrue(new Double(0.25).equals(NeuralNetwork.sigmoidDerivative(0)));
-		assertTrue(new Double(0.19661193324148185).equals(NeuralNetwork.sigmoidDerivative(1)));
-		assertTrue(new Double(0.10499358540350653).equals(NeuralNetwork.sigmoidDerivative(-2)));		
+		assertTrue(new Double(0.25).equals(MathUtils.sigmoidDerivative(0)));
+		assertTrue(new Double(0.19661193324148185).equals(MathUtils.sigmoidDerivative(1)));
+		assertTrue(new Double(0.10499358540350653).equals(MathUtils.sigmoidDerivative(-2)));		
 	}
 	
 	@Test
 	public void testTrainingExampleLoading() {
 		int[] numNeurons = {7,3,1};
-		NeuralNetwork nn = new NeuralNetwork(numNeurons);
+		FFBPNeuralNetwork nn = new FFBPNeuralNetwork(numNeurons);
 		
 		try {
 			nn.loadExamples("var/abaloneNormalized.csv", Mode.TRAINING);
@@ -51,7 +51,7 @@ public class NeuralNetworkTest {
 	@Test
 	public void testTestingExampleLoading() {
 		int[] numNeurons = {7,3,1};
-		NeuralNetwork nn = new NeuralNetwork(numNeurons);
+		FFBPNeuralNetwork nn = new FFBPNeuralNetwork(numNeurons);
 		
 		try {
 			nn.loadExamples("var/abaloneNormalizedTesting.csv", Mode.TESTING);
@@ -65,7 +65,7 @@ public class NeuralNetworkTest {
 	@Test
 	public void testFullCycle() {
 		int[] numNeurons = {7,3,1};
-		NeuralNetwork nn = new NeuralNetwork(numNeurons);
+		FFBPNeuralNetwork nn = new FFBPNeuralNetwork(numNeurons);
 		
 		try {
 			nn.loadExamples("var/abaloneNormalized.csv", Mode.TRAINING);
@@ -80,7 +80,7 @@ public class NeuralNetworkTest {
 	@Test
 	public void testPrediction() {
 		int[] numNeurons = {7,3,1};
-		NeuralNetwork nn = new NeuralNetwork(numNeurons);
+		FFBPNeuralNetwork nn = new FFBPNeuralNetwork(numNeurons);
 		
 		try {
 			nn.loadExamples("var/abaloneNormalized.csv", Mode.TRAINING);
